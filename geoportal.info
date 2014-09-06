@@ -1,0 +1,6 @@
+name = GeoPortal.
+description = Ce module permet de faire la recherche de métadonnées.
+core = 7.x
+version = 7.x-1.0
+package = Informatique Scientifique
+scripts[]=geoportal.js

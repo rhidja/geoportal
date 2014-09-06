@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * pro_spirales.module
+ */
+
+/*
+ * Dans ce fichier se trouve 3 fonctions:
+ *
+ * 1. geoportal_menu() : Ce fonction implémente le hook_menu() qui permet sous drupal
+ *    de créer les menu.
+ *
+ * 2. mapviewer_callback() : Cette fonction est appelé par le menu "geoportal_mapviewer"
+ *    pour afficher le mapviewer
+ *    
+ * 3. geoportal_detail_callback : Cette fonction est appelé par le menu "geoportal_detail"
+ *    pour afficher le détail d'une métadonnée.
+ */
+
+/**
+* Implements hook_menu().
+*/
+function geoportal_menu() {
+	
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['geoportal_recherche'] = array(
+		'title' => 'Recherche de métadonnées',
+		'type' => MENU_NORMAL_ITEM,
+		'access arguments' => array('access content'),
+		'page callback' => 'drupal_get_form',
+		'file' => 'geoportal_form.inc',
+		'page arguments' => array('geoportal_recherche_form'),
+		);
+
+	// Ce menu affiche le détail d'une méta donnée.
+	$items['geoportal_detail'] = array(
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('access content'),
+		'page callback' => 'geoportal_detail_callback', 
+		);
+
+	// Ce menu affiche le map viewer
+	$items['geoportal_mapviewer'] = array(
+		'type' => MENU_CALLBACK,
+		'access arguments' => array('access content'),
+		'page callback' => 'mapviewer_callback',
+		);
+
+	return $items;
+}
+
+// Cette fonction affiche le mapviewer dans un iframe.
+function mapviewer_callback() {
+	$output ='';
+	$output.='<div class="container row" style="height:600px">';
+	$output.='<iframe id="myiframe" src="http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/viewer/index.jsp" frameborder="0" width="100%" height="100%">';
+	$output.='<p>Votre navigateur ne supporte pas l\'élément iframe</p>';
+	$output.='</iframe>';
+	$output.='</div>';
+	return $output;
+}
+
+// Cette fonction permet d'afficher le détail d'une meta donnée. 
+function geoportal_detail_callback($id='') {
+	$request = drupal_http_request('http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/catalog/search/resource/details.page?uuid='.$id);
+	return $request->data;
+}
