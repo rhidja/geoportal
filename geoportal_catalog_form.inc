@@ -36,6 +36,12 @@ function geoportal_catalog_form($form,&$form_state,$cid=''){
 		'#required' => TRUE,
 		'#default_value' => !empty($catalog->cid) ? $catalog->cid : '',
 		);
+	
+	$form['catalog']['status'] = array(
+		'#type'     => 'checkbox',
+		'#title'    => t('Enable'),
+		'#default_value' => !empty($catalog->status) ? $catalog->status : 0,
+		);
 
 	$form['catalog']['name'] = array(
 		'#type'     => 'textfield',
@@ -65,6 +71,7 @@ function geoportal_catalog_form_submit($form,&$form_state){
 		->fields(array(
 			'cid'          => $form_state['values']['cid'],
 			'name'         => $form_state['values']['name'],
+			'status'       => $form_state['values']['status'],
 			'description'  => $form_state['values']['description'],
 			))
 		->condition('num',$form_state['values']['num'], '=')
@@ -81,6 +88,7 @@ function geoportal_catalog_form_submit($form,&$form_state){
 		->fields(array(
 			'cid'          => $form_state['values']['cid'],
 			'name'         => $form_state['values']['name'],
+			'status'       => $form_state['values']['status'],
 			'description'  => $form_state['values']['description'],
 			))
 		->execute();

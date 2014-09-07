@@ -383,9 +383,6 @@ function geoportal_recherche_callback($form, &$form_state) {
 	// Création de la variable $url qui contient l'URL du portail de métadonnées
 	// Plus les parametres de l'URL.
 	$url = variable_get('geoportal_url','').'/rest/find/document?';
-	//$url ='http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/rest/find/document?';
-	//$url ='http://vmdevsi-geoportal.mpl.ird.fr:8080/geoportal/rest/find/document?';
-	//$url ='http://gptogc.esri.com/geoportal/rest/find/document?';
 
 	// Faire appel à la fonction de drupal "drupal_http_request" pour exécuter
 	// la requette http
@@ -437,6 +434,7 @@ function catalogues_rows() {
 	
 	$query =db_select('geoportal_catalogs', 'c')
 	->fields('c')
+	->condition('status',1,'=')
 	->orderby('cid','ASC');
 	$results = $query->execute();
 
@@ -477,25 +475,17 @@ function content_type_rows() {
  * catalogues sous forme de liste de cases à cocher.
  */
 function data_category_rows() {
-	return array(	
-		'boundaries'               => 'Administrative and Political Boundaries',
-		'farming'                  => 'Agriculture and Farming',
-		'climatologyMeteorologyAtmosphere' => 'Atmosphere and Climatic',
-		'biota'                    => 'Biology and Ecology',
-		'economy'                  => 'Business and Economic',
-		'planningCadastre'         => 'Cadastral',
-		'society'                  => 'Cultural, Society and Demography',
-		'elevation'                => 'Elevation and Derived Products',
-		'environment'              => 'Environment and Conservation',
-		'structure'                => 'Facilities and Structures',
-		'geoscientificInformation' => 'Geological and Geophysical',
-		'health '                  => 'Human Health and Disease',
-		'imageryBaseMapsEarthCover'=> 'Imagery and Base Maps',
-		'inlandWaters'             => 'Inland Water Resources',
-		'location'                 => 'Locations and Geodetic Networks',
-		'intelligenceMilitary '    => 'Military',
-		'oceans'                   => 'Oceans and Estuaries',
-		'transportation'           => 'Transportation Networks',
-		'utilitiesCommunication'   => 'Utilities and Communication',
-		);
+	
+	$query =db_select('geoportal_data_category', 'd')
+	->fields('d')
+	->condition('status',1,'=')
+	->orderby('dcid','ASC');
+	$results = $query->execute();
+
+	$data_category = array();
+	foreach ($results as $result) {
+		$data_category[$result->dcid] = t($result->name);
+	}
+	
+	return $data_category;
 }

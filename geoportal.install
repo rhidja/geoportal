@@ -15,8 +15,8 @@ function geoportal_schema(){
 				),
 			'cid' 	=> array(
 				'type' => 'varchar',
-				'length' => 32,
-				'not null' => TRUE, 
+				'length' => 128,
+				'not null' => TRUE,
 				'default' => '',
 				),
 			'name'  => array(
@@ -24,6 +24,11 @@ function geoportal_schema(){
 				'length' => 250,
 				'not null' => TRUE, 
 				'default' => '',				
+				),
+			'status' => array(
+				'type' => 'int', 
+				'not null' => TRUE, 
+				'default' => 0
 				),
 			'description'  => array(
 				'type' => 'text',
@@ -35,11 +40,50 @@ function geoportal_schema(){
 		'unique keys' => array(
 			'cid' => array('cid'),
 			),
-					
+
 		'primary key' => array('num'),
 
 		);
 
+	$schema['geoportal_data_category'] = array(
+		'description' => 'Geoportal Data Category',
+		
+		'fields' => array(
+			'num' 	=> array(
+				'type' => 'serial', 
+				'unsigned' => TRUE,
+				'not null' => TRUE
+				),
+			'dcid' 	=> array(
+				'type' => 'varchar',
+				'length' => 128,
+				'not null' => TRUE,
+				'default' => '',
+				),
+			'name'  => array(
+				'type' => 'varchar',
+				'length' => 250,
+				'not null' => TRUE, 
+				'default' => '',				
+				),
+			'status' => array(
+				'type' => 'int', 
+				'not null' => TRUE, 
+				'default' => 0
+				),
+			'description'  => array(
+				'type' => 'text',
+				'not null' => TRUE,			
+				),
+			),
+
+		'unique keys' => array(
+			'dcid' => array('dcid'),
+			),
+
+		'primary key' => array('num'),
+
+		);
 	return $schema;
 }
 
