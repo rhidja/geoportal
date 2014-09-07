@@ -49,41 +49,6 @@ function geoportal_recherche_form($form,&$form_state){
 		);
 
 	
-	$form['left_bar']['recherche'] = array(
-		'#type' => 'fieldset',
-		'#title' => t('Recherche'),
-		'#collapsible' => FALSE,
-		'#collapsed' => FALSE,
-		);
-
-	// searchText.
-	$form['left_bar']['recherche']['searchText'] = array(
-		'#type'        => 'textfield',
-		'#description' => t('Tappez un mot clé ici'),
-		'#attributes'  => array('placeholder' =>array('Tappez vos mos clés ici...')),
-		);
-
-	// Bouton de recherche.
-	$form['left_bar']['recherche']['search'] = array(
-		'#type'  => 'submit',
-		'#value' => 'Chercher!',
-		'#suffix'=>'',
-		'#ajax' => array(
-			'callback' => 'geoportal_recherche_form_ajax',
-			'wrapper'  => 'geoContent',
-			'method'   => 'html',
-			),
-		);
-
-	// Lien sous form d'un bouton pour aller sur mapviewer.
-	$form['left_bar']['recherche']['mapviewer'] = array(
-		'#type' => 'link',
-		'#title' => 'Map Viewer',
-		'#href' => 'geoportal_mapviewer',
-		'#attributes' => array('class' => array('btn btn-primary pull-right')),
-		);
-
-
 	$form['left_bar']['fieldset_data_category'] = array(
 		'#type' => 'fieldset',
 		'#title' => t('Data Category'),
@@ -231,7 +196,6 @@ function geoportal_recherche_form($form,&$form_state){
 			'esriSpatialRelWithin' => t('Fully within'),
 			),
 		);	
-
 	$form['right_bar'] = array(
 		'#type'        => 'fieldset',
 		'#collapsible' => FALSE,
@@ -239,7 +203,38 @@ function geoportal_recherche_form($form,&$form_state){
 		'#attributes'  => array('class' => array('col-md-7')),
 		);
 
-	$form['right_bar']['geoportal']= array(
+	$form['right_bar']['recherche'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Recherche'),
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE,
+		);
+
+	// searchText.
+	$form['right_bar']['recherche']['searchText'] = array(
+		'#type'        => 'textfield',
+		'#attributes'  => array('placeholder'=>array('search Text...')),
+		);
+
+	// Bouton de recherche.
+	$form['right_bar']['recherche']['search'] = array(
+		'#type'  => 'submit',
+		'#value' => 'Chercher!',
+		'#ajax' => array(
+			'callback' => 'geoportal_recherche_form_ajax',
+			'wrapper'  => 'geoContent',
+			'method'   => 'html',
+			),
+		//'#suffix'=>'</td></tr></table>',
+		);
+	
+	$form['right_bar']['geoportal'] = array(
+		'#type' => 'fieldset',
+		'#collapsible' => FALSE,
+		'#collapsed' => FALSE,
+		);
+
+	$form['right_bar']['geoportal']['results']= array(
 		'#title' => t('Liste de métadonnées'),
 		'#markup' => '<div id="geoContent" class="col-md-12">'.geoportal_recherche_callback($form,$form_state).'</div>',
 		);
