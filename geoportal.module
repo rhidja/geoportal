@@ -21,8 +21,62 @@
 /**
 * Implements hook_menu().
 */
+
+function geoportal_permission(){
+	return array(
+		'administer geoportal' => array(
+			'title'      	=> t('Administer Geoportal'),
+			'description'	=> t('Perfom administeration tasks for Geoportal'),
+			),
+		);
+}
+
 function geoportal_menu() {
 	
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['admin/config/geoportal'] = array(
+		'title' => 'Geoportal',
+		'type' => MENU_NORMAL_ITEM,
+		'access arguments' => array('administer geoportal'),
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('geoportal_admin_form'),
+		);
+
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['admin/config/geoportal/add'] = array(
+		'title'            => 'Add catalog',
+		'type'             => MENU_NORMAL_ITEM,
+		'access arguments' => array('administer geoportal'),
+		'page callback'    => 'geoportal_add_catalog_form',
+		'file' 			   => 'geoportal_catalog_form.inc',
+		);
+	
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['admin/config/geoportal/edit'] = array(
+		'type'             => MENU_CALLBACK,
+		'access arguments' => array('administer geoportal'),
+		'page callback'    => 'geoportal_edit_catalog_form',
+		'file' 			   => 'geoportal_catalog_form.inc',
+		);
+
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['admin/config/geoportal/add'] = array(
+		'title'            => 'Add catalog',
+		'type'             => MENU_NORMAL_ITEM,
+		'access arguments' => array('administer geoportal'),
+		'page callback'    => 'geoportal_add_catalog_form',
+		'file' 			   => 'geoportal_catalog_form.inc',
+		);
+	
+	// Ce menu affiche le formulaire de recherche de méta données.
+	$items['admin/config/geoportal/delete'] = array(
+		'type'             => MENU_CALLBACK,
+		'access arguments' => array('administer geoportal'),
+		'page callback'    => 'drupal_get_form',
+		'file' 			   => 'geoportal_catalog_form.inc',
+		'page arguments'   => array('geoportal_delete_catalog_form'),
+		);
+
 	// Ce menu affiche le formulaire de recherche de méta données.
 	$items['geoportal_recherche'] = array(
 		'title' => 'Recherche de métadonnées',
@@ -50,11 +104,92 @@ function geoportal_menu() {
 	return $items;
 }
 
+function geoportal_admin_form($form,&$form_state){
+	
+	$form['geoportal'] = array(
+		'#type' => 'fieldset',
+		'#collapsible' => FALSE,
+		'#collapsed'   => FALSE,
+		);
+
+	$form['geoportal']['catalog_add'] = array(
+		'#type' => 'link',
+		'#title' => t('+ Catalog'),
+		'#href'   => t('admin/config/geoportal/add'),
+		);	
+
+	$form['geoportal']['url'] = array(
+		'#type' => 'fieldset',
+		'#title' => t('Url'),
+		'#collapsible' => TRUE,
+		'#collapsed'   => FALSE,
+		);
+
+	$form['geoportal']['url']['geoportal_url'] = array(
+		'#type' => 'textfield',
+		'#title' => t('Introduire l\'url de l\'application Geoportal'),
+		'#default_value'=> variable_get('geoportal_url',''),
+		);
+
+	$header = array(
+		'cid'   => array('data' => t('Id'), 'field' => 'name'),
+		'name'  => t('Name'),
+		'edit'=> t('Edit'),
+		'delete'=> t('Delete'),
+		);
+
+	$form['geoportal']['catalogs']  = array(
+		'#type' => 'tableselect',
+		'#header' => $header,
+		'#options' => _catalogs_rows($header,10),
+		'#empty' => t('Table vide.'),
+		'#default_value' =>variable_get('catalogs',array()),
+		);
+
+	return system_settings_form($form);
+}
+
+
+function _catalogs_rows($header,$limit){
+
+	$query =db_select('geoportal_catalogs', 'c')->extend('PagerDefault');
+	$query->fields('c');
+	$query->extend('TableSort')
+	->limit($limit)
+	->orderByHeader($header);
+	$results = $query->execute();
+
+	$rows = array();
+	foreach ($results as $result) {
+		$rows[$result->cid] = array(
+			'cid'   => t($result->cid),
+			'name'  => t($result->name),
+			'edit' => array(
+				'data' => array(
+					'#type'  => 'link',
+					'#title' => t('Edit'),
+					'#href'  => t('admin/config/geoportal/edit/'.$result->cid),
+					),
+				),
+			'delete' => array(
+				'data' => array(
+					'#type'  => 'link',
+					'#title' => t('Delete'),
+					'#href'  => t('admin/config/geoportal/delete/'.$result->cid),
+					),
+				),			
+			);
+	}
+	return $rows;
+}
+
+
 // Cette fonction affiche le mapviewer dans un iframe.
 function mapviewer_callback() {
+	$url = variable_get('geoportal_url','').'/viewer/index.jsp';
 	$output ='';
 	$output.='<div class="container row" style="height:600px">';
-	$output.='<iframe id="myiframe" src="http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/viewer/index.jsp" frameborder="0" width="100%" height="100%">';
+	$output.='<iframe id="myiframe" src="'.$url.'" frameborder="0" width="100%" height="100%">';
 	$output.='<p>Votre navigateur ne supporte pas l\'élément iframe</p>';
 	$output.='</iframe>';
 	$output.='</div>';
@@ -63,6 +198,7 @@ function mapviewer_callback() {
 
 // Cette fonction permet d'afficher le détail d'une meta donnée. 
 function geoportal_detail_callback($id='') {
-	$request = drupal_http_request('http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/catalog/search/resource/details.page?uuid='.$id);
+	$url = variable_get('geoportal_url','').'/catalog/search/resource/details.page?';
+	$request = drupal_http_request($url.'uuid='.$id);
 	return $request->data;
 }

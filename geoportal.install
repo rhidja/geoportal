@@ -1,0 +1,45 @@
+<?php
+
+function geoportal_schema(){
+	
+	$schema = array();
+	
+	$schema['geoportal_catalogs'] = array(
+		'description' => 'Geoportal Catalogs Table',
+		
+		'fields' => array(
+			'num' 	=> array(
+				'type' => 'serial', 
+				'unsigned' => TRUE,
+				'not null' => TRUE
+				),
+			'cid' 	=> array(
+				'type' => 'varchar',
+				'length' => 32,
+				'not null' => TRUE, 
+				'default' => '',
+				),
+			'name'  => array(
+				'type' => 'varchar',
+				'length' => 250,
+				'not null' => TRUE, 
+				'default' => '',				
+				),
+			'description'  => array(
+				'type' => 'text',
+				'not null' => TRUE,			
+				),
+			),
+
+		
+		'unique keys' => array(
+			'cid' => array('cid'),
+			),
+					
+		'primary key' => array('num'),
+
+		);
+
+	return $schema;
+}
+

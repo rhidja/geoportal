@@ -4,8 +4,8 @@
 /*
  * Dans ce fichier se trouve 6 fonctions :
  *
- * 1. geoportal_recherche_form($form,&$form_status)
- * 2. geoportal_recherche_form_ajax($form, &$form_state) 
+ * 1. geoportal_recherche_form($form,&$form_state)
+ * 2. geoportal_recherche_form_ajax($form, &$form_state)
  * 3. geoportal_recherche_callback($form, &$form_state)
  * 4. catalogues_rows()
  * 5. content_type_rows()
@@ -20,7 +20,7 @@
  *    Les paramètres $form et $form_state sont des paramètres de base de la fonction
  *    hook_form().
  */
-function geoportal_recherche_form($form,&$form_status){
+function geoportal_recherche_form($form,&$form_state){
 
 	$form['left_bar'] = array(
 		'#type'        => 'fieldset',
@@ -40,6 +40,7 @@ function geoportal_recherche_form($form,&$form_status){
 	$form['left_bar']['fieldset_catalogues']['catalogues'] = array( 
 		'#type' => 'checkboxes',
 		'#options' => catalogues_rows(),
+		'#default_value' => !empty($form_state['values']['catalogues']) ? $form_state['values']['catalogues'] : array('local'),
 		'#ajax' => array(
 			'callback' => 'geoportal_recherche_form_ajax',
 			'wrapper'  => 'geoContent',
@@ -381,7 +382,8 @@ function geoportal_recherche_callback($form, &$form_state) {
 	$parametres .='&f=json';
 	// Création de la variable $url qui contient l'URL du portail de métadonnées
 	// Plus les parametres de l'URL.
-	$url ='http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/rest/find/document?';
+	$url = variable_get('geoportal_url','').'/rest/find/document?';
+	//$url ='http://vmportailmd-dev.mpl.ird.fr:8080/geoportal/rest/find/document?';
 	//$url ='http://vmdevsi-geoportal.mpl.ird.fr:8080/geoportal/rest/find/document?';
 	//$url ='http://gptogc.esri.com/geoportal/rest/find/document?';
 
@@ -432,14 +434,19 @@ function geoportal_recherche_callback($form, &$form_state) {
  *
  */
 function catalogues_rows() {
-	return array(
-		'local'     => t('This Site'),
-		'pigo'      => t('<span data-toggle="tooltip" data-placement="top" title="La plateforme d\'information géographique de Ouagadougou a pour objectif de collecter, d’harmoniser et de valoriser des données géographiques sur la ville de Ouagadougou issues de la recherche scientifique">PIGO : Portail de données géographiques sur la ville de Ougadougou</span>'),
-		'neotec'    => t('<span data-toggle="tooltip" data-placement="top" title=" le projet de données NEOTEC-ouvert est de présenter un plan unifié de failles actives dans différents domaines tectoniques et climatiques de la Cordillère des Andes; diffuser de l\'information géoscientifique et proposer une communication scientifique en ligne." > NEOTEC : Neotectonic Open Data for South America</span>'),
-		'picson'    => t('<span data-toggle="tooltip" data-placement="top" title="Portail  de l\'information géographique sur le Sud Ouest du Niger" > PICSON</span>'),
-		'ammacatch' => t('<span data-toggle="tooltip" data-placement="top" title="Système d\'information pour la gestion des Ressources Naturelles et espaces du Bas Sénégal" > AMMA-CATCH : Mousson Afrique de l\'ouest</span>'),
-		'sirena'    => t('<span data-toggle="tooltip" data-placement="top" title="Observatoire de la variabilité climatique et de son impact hydrologique en Afrique de l\'Ouest"> SIRENA : Biodiversité du fleuve Sénégal </span>'),
-		);
+	
+	$query =db_select('geoportal_catalogs', 'c')
+	->fields('c')
+	->orderby('cid','ASC');
+	$results = $query->execute();
+
+	$catalogs = array();
+	$catalogs['local'] = t('This site');
+	foreach ($results as $result) {
+		$catalogs[$result->cid] = t($result->name);
+	}
+	
+	return $catalogs;
 }
 
 /*
