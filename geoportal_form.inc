@@ -436,7 +436,7 @@ function catalogues_rows() {
 	$catalogs = array();
 	$catalogs['local'] = t('This site');
 	foreach ($results as $result) {
-		$catalogs[$result->cid] = t($result->name);
+		$catalogs[$result->cid] = t('<span data-toggle="tooltip" data-placement="top" title="'.$result->description.'">'.$result->name.'</span>');
 	}
 	
 	return $catalogs;
