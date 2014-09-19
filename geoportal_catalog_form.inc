@@ -59,7 +59,7 @@ function geoportal_catalog_form($form,&$form_state,$cid=''){
 	$form['catalog']['submit'] = array(
 		'#type'     => 'submit',
 		'#value'    => !empty($catalog->cid) ? t('Update') : t('Submit'),
-		);	
+		);
 
 	return $form;
 }
@@ -77,7 +77,7 @@ function geoportal_catalog_form_submit($form,&$form_state){
 		->condition('num',$form_state['values']['num'], '=')
 		->execute();
 
-		drupal_set_message(t('Le catalogue  "@name"  est modifié',
+		drupal_set_message(t('Le catalogue  "@name"  a été modifié',
 			array(
 				'@name' => $form_state['values']['name'],
 				)
@@ -93,12 +93,13 @@ function geoportal_catalog_form_submit($form,&$form_state){
 			))
 		->execute();
 
-		drupal_set_message(t('Le catalogue  "@name"  est ajouté',
+		drupal_set_message(t('Le catalogue  "@name"  a été ajouté',
 			array(
 				'@name' => $form_state['values']['name'],
 				)
 			));
 	}
+	$form_state['redirect'] = 'admin/config/geoportal';
 }
 
 
@@ -146,4 +147,5 @@ function geoportal_delete_catalog_form_submit($form,&$form_state) {
 			'@cid' => $form_state['values']['cid'],
 			)
 		));
+	$form_state['redirect'] = 'admin/config/geoportal';
 }

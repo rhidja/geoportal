@@ -39,13 +39,14 @@ function geoportal_recherche_form($form,&$form_state){
 	// Liste des catalogues.
 	$form['left_bar']['fieldset_catalogues']['catalogues'] = array( 
 		'#type' => 'checkboxes',
+		//'#type' => 'radios',
 		'#options' => catalogues_rows(),
-		'#default_value' => !empty($form_state['values']['catalogues']) ? $form_state['values']['catalogues'] : array('local'),
 		'#ajax' => array(
 			'callback' => 'geoportal_recherche_form_ajax',
 			'wrapper'  => 'geoContent',
 			'method'   => 'html',
-			),		
+			),	
+		'#suffix' => t('<p><br>* : Catalogues distants.</p>'),
 		);
 
 	
@@ -292,12 +293,21 @@ function geoportal_recherche_callback($form, &$form_state) {
 	
 	// Catalogues
 
+	/*
+	// Avec les radios.
+	if(!empty($form_state['values']['catalogues'])){
+		$parametres .='&rid='.$form_state['values']['catalogues'];
+		$parametres .='&rids='.$form_state['values']['catalogues'];
+	}
+	*/
+
 	//*
+	// Avec les checkboxes.
 	$rid ='';
 	if(!empty($form_state['values']['catalogues'])){
 		foreach ($form_state['values']['catalogues'] as $args) {
 			if ($args!='0') {
-				$rid  = $args; 
+				$rid  = $args;
 			}
 		}
 	}
@@ -315,11 +325,11 @@ function geoportal_recherche_callback($form, &$form_state) {
 		}
 	}
 
-
 	if (!empty($rids)) {
 		$parametres .='&rids='.substr($rids, 0, -1);
 	}
-
+	
+	//*/
 
 	// La donnée de départ 
 	if (!empty($form_state['values']['start'])) {
@@ -434,7 +444,7 @@ function catalogues_rows() {
 	$results = $query->execute();
 
 	$catalogs = array();
-	$catalogs['local'] = t('This site');
+	$catalogs['local'] = t('Catalogues locaux');
 	foreach ($results as $result) {
 		$catalogs[$result->cid] = t('<span data-toggle="tooltip" data-placement="top" title="'.$result->description.'">'.$result->name.'</span>');
 	}

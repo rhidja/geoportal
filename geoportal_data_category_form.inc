@@ -99,6 +99,7 @@ function geoportal_data_category_form_submit($form,&$form_state){
 				)
 			));
 	}
+	$form_state['redirect'] = 'admin/config/geoportal';
 }
 
 
@@ -146,4 +147,5 @@ function geoportal_delete_data_category_form_submit($form,&$form_state) {
 			'@dcid' => $form_state['values']['dcid'],
 			)
 		));
+	$form_state['redirect'] = 'admin/config/geoportal';
 }
