@@ -1,13 +1,11 @@
-geoportal
-=========
+Description
+===========
 
-Module Drupal7 d'Intégaration du portail de métadonnées Geoportal de Esri
-
-http://gptogc.esri.com/geoportal/catalog/main/home.page
+Geoportal est un module Drupal7 qui permet l’intégration du formulaire de recherche de métadonnées [Geoportal](http://gptogc.esri.com/geoportal/catalog/main/home.page) de [Esri](http://www.esri.com/software/arcgis/geoportal) sur votre site.
 
 Installation
 ============
-Voir la doc officiel de Drupal7
+Voir la doc officiel de [Drupal7](https://www.drupal.org/drupal-7.0/fr)
 
 Configuration
 =============
